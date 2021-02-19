@@ -1,5 +1,6 @@
 defmodule Bulls.Game do
 
+  # Generates a new game state with a random secret
   def new do
     %{
       secret: random_secret(),
@@ -8,6 +9,7 @@ defmodule Bulls.Game do
     }
   end
 
+  # Returns true if the game state shows the game is not over, false otherwise
   def canGuess(%{results: [last_result | _]} = st) do
     last_result != "4A0B" and length(st.guesses) < 8
   end
@@ -16,6 +18,8 @@ defmodule Bulls.Game do
     true
   end
 
+  # Returns a state with the results of the given guess given. If the game is
+  # over the same state is returned
   def guess(st, gg) do
     if canGuess(st) do
       result = List.foldl(gg,
@@ -44,6 +48,7 @@ defmodule Bulls.Game do
     end
   end
 
+  # Returns a view of the game state without the secret for the user
   def view(st) do
     %{
       guesses: st.guesses,
@@ -51,6 +56,7 @@ defmodule Bulls.Game do
     }
   end
 
+  # Private functions to generate a 4 digit list of unique integers for the secret
   defp random_secret_helper(acc, 4) do
     acc
   end
