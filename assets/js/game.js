@@ -10,10 +10,6 @@ function guess(text){
     ch_push({guess: text});
 }
 
-export function isGameOver() {
-
-}
-
 export function GuessInput({enabled}) {
     const [text, setText] = useState("");
 
