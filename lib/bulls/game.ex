@@ -8,19 +8,40 @@ defmodule Bulls.Game do
     }
   end
 
-  defp guess_helper(secret, [], posn, a_cnt, b_cnt) do
+  def canGuess(%{results: [last_result | _]} = st) do
+    last_result != "4A0B" and length(st.guesses) < 8
   end
 
-  defp guess_helper(secret, gg_list, posn, a_cnt, b_cnt) do
+  def canGuess(_) do
+    true
   end
 
   def guess(st, gg) do
-    result = guess_helper(st.secret, gg.grapheme(), 0, 0, 0)
-    %{
-      secret: st.secret,
-      guesses: st.guesses ++ [gg],
-      results: st.guesses ++ [result]
-    }
+    if canGuess(st) do
+      result = List.foldl(gg,
+                          %{posn: 0, a_cnt: 0, b_cnt: 0},
+                          fn el, acc ->
+                            cond do
+                              el == elem(List.pop_at(st.secret, acc.posn), 0) ->
+                                %{posn: acc.posn + 1,
+                                  a_cnt: acc.a_cnt + 1,
+                                  b_cnt: acc.b_cnt}
+                              el in st.secret ->
+                                %{posn: acc.posn + 1,
+                                  a_cnt: acc.a_cnt,
+                                  b_cnt: acc.b_cnt + 1}
+                              true -> %{acc | posn: acc.posn + 1}
+                            end
+                          end)
+
+      %{
+        secret: st.secret,
+        guesses: [List.to_string(gg) | st.guesses],
+        results: ["#{result.a_cnt}A#{result.b_cnt}B" | st.results]
+      }
+    else
+      st
+    end
   end
 
   def view(st) do
@@ -35,7 +56,7 @@ defmodule Bulls.Game do
   end
 
   defp random_secret_helper(acc, size) do
-    base_charset = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] -- acc
+    base_charset = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] -- acc
     random_secret_helper([Enum.random(base_charset) | acc], size + 1)
   end
 

@@ -1,4 +1,5 @@
 import 'bulma/css/bulma.css'
+import '../css/app.scss'
 import React, { useState } from 'react';
 import { ch_push, ch_reset } from './socket';
 
@@ -57,6 +58,22 @@ export function GuessInput({enabled}) {
                     Reset
                 </button>
             </div>
+        </div>
+    );
+}
+
+export function GuessList({guesses, results}) {
+    return(
+        <div className="content">
+            <ul className="no-marker">
+                {guesses.map(function(e, i){
+                    return (
+                        <li key={i}>
+                            <p>{e}: {results[i]}</p>
+                        </li>
+                    );
+                })}
+            </ul>
         </div>
     );
 }
